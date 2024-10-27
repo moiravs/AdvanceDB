@@ -1,0 +1,64 @@
+\documentclass[journal, a4paper]{IEEEtran}
+\usepackage[T1]{fontenc}       % Encodage le plus étendu
+\usepackage[utf8]{inputenc}    % Source Unicode en UTF-8
+\usepackage{capt-of}  % <---
+\usepackage{cuted}    % <===
+\usepackage[francais]{babel} % Pour la redaction du document en francais
+\usepackage{listings}
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage[cyr]{aeguill}
+\usepackage[margin=1cm]{geometry} % Adjust margins as needed
+
+
+\usepackage[
+  separate-uncertainty = true,
+  multi-part-units = repeat
+]{siunitx}
+\usepackage{amsmath}
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+\usepackage{float}
+\usepackage{graphicx} 
+\usepackage{url}    
+\usepackage{stfloats} 
+\usepackage{amsmath}   
+
+\usepackage{lipsum} % Dummy text
+
+
+% En-tête et pied de page
+\usepackage{lastpage}
+\usepackage{placeins}
+\usepackage{tabularx}
+\usepackage{etoolbox} % for \BeforeBeginEnvironment and \AfterEndEnvironment
+
+\BeforeBeginEnvironment{tabular}{\vspace{0.5cm}} % Add space before the table
+\AfterEndEnvironment{tabular}{\vspace{0.5cm}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+
+
+
+% Your document starts here!
+\begin{document}
+
+
+% Define document title and author
+\title{Advanced Databases \\\vspace*{20pt} \normalsize Novembre 2024}
+\author{Jean-Nicolas Grégoire : 000000 (M-INFO) \\
+        Arthur Installe : 000000 (M-INFO) \\
+        Moïra Vanderslagmolen : 547486 (M-INFO) \\
+        Xu Ze-xuan : 000000 (M-INFO)
+        }
+\markboth{Advanced Databases}{Advanced Databases}
+\date{Novembre 2024}
+\maketitle
+
+
+\section{Introduction}
+
+
+
+
+
+\end{document}
