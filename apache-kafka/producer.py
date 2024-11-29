@@ -10,7 +10,7 @@ producer = KafkaProducer(
 
 for i in range(100):
     data = {'number': i}
-    producer.send('test-topic', value=data)
+    producer.send('advanceddb', value=data)
     print(f'Sent: {data}')
     time.sleep(1)
 

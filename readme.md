@@ -12,6 +12,19 @@ sudo systemctl start kafka
 sudo systemctl enable kafka
 pip install kafka-python
 pip install kafka-python-ng
+/bin/kafka-topics.sh --create --topic advanceddb --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+```
+
+#### Create the db
+
+```
+createdb streamdb
+sudo -u postgres psql
+CREATE TABLE messages (
+    id SERIAL PRIMARY KEY,
+    value TEXT,
+    timestamp TIMESTAMP
+);
 ```
 ### Ubuntu
 You first need java. 
