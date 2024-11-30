@@ -71,7 +71,7 @@ yay apache-flink
 # Start the cluster, for me it was this path but change it with your path
 /home/moira/.cache/yay/apache-flink/src/flink-1.20.0/bin/start-cluster.sh
 
-# to start a server with port 9999
+# to start a server with port 9999 (not when testing with .csv)
 nc -lk 9999
 
 # start java (change with your path)
@@ -79,3 +79,7 @@ nc -lk 9999
 
 
 ```
+
+## DataSet to benchmark
+
+https://catalog.data.gov/dataset/development-credit-authority-dca-data-set-loan-transactions-a8dbe

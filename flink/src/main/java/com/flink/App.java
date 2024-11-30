@@ -1,29 +1,41 @@
 package com.flink;
 
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class App {
+    private static final Logger LOG = LoggerFactory.getLogger(App.class);
+
     public static void main(String[] args) throws Exception {
-        // Set up the execution environment
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        try {
+            // Set up the execution environment
+            LOG.info("Setting up the execution environment...");
+            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        // Create a DataStream from a socket source
-        DataStream<String> text = env.socketTextStream("localhost", 9999);
+            LOG.info("Reading the CSV file...");
+            // Read the CSV file
+            DataSet<Tuple3<String, String, Integer>> csvInput = env
+                    .readCsvFile("data/test.csv")
+                    .ignoreFirstLine()
+                    .parseQuotedStrings('"')
+                    .types(String.class, String.class, Integer.class);
 
-        // Process the data
-        DataStream<String> processed = text.map(new MapFunction<String, String>() {
-            @Override
-            public String map(String value) throws Exception {
+            LOG.info("Processing the data...");
+            // Process the data
+            DataSet<String> processed = csvInput.map((Tuple3<String, String, Integer> value) -> {
+                LOG.info("Processing row: " + value);
                 return "Processed: " + value;
-            }
-        });
+            });
 
-        // Print the processed data to the console
-        processed.print();
-
-        // Execute the Flink job
-        env.execute("Flink Stream DB Example");
+            LOG.info("Printing the processed data to the console...");
+            // Print the processed data to the console
+            processed.print();
+        } catch (Exception e) {
+            LOG.error("Error executing Flink job", e);
+            throw e;
+        }
     }
 }

@@ -57,9 +57,13 @@
 
 \section{Introduction}
 
-Stream databases are databases adapted to handle real-time data. It process the data immediately.
-
+Stream databases are databases adapted to handle real-time data.
+There are two ways to handle data: stream processing and batch processing.
+Batch processing process the data by batches, after it has been ?, while stream processing process the data continuously.
 It is used in financial transactions, transport logistics, monitoring, etc.
+
+In this report, we want to compare two stream processor: Apache Flink versus Apache Kafka.
+Apache Kafka ensure that the data is available for processing while Apache Flink focuses on analyzing real-time datastreams
 
 \section{Foundations}
 
@@ -69,6 +73,8 @@ Consumer is the client that select the events of the database
 A topic is the place where the data is stored. It contains multiples partitions and each partition store a certain numbers of records.
 
 \subsection{Apache Flink}
+
+In Apache Flink, the data sources write to the stream database and the data sinks reads from the database.
 
 
 \section{Implementation}
