@@ -20,6 +20,8 @@ public class App {
 
         DataStream<String> stringInputStream = environment.addSource(kafkaConsumer);
 
+        stringInputStream.print();
+
     }
 
     public static FlinkKafkaConsumer<String> createStringConsumerForTopic(

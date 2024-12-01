@@ -7,7 +7,7 @@ import time
 # Create a Kafka producer
 producer = KafkaProducer(
     bootstrap_servers='localhost:9092',
-    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+    value_serializer=lambda v: str(v).encode('utf-8')
 )
 
 # Load data from the CSV file
@@ -32,8 +32,9 @@ for index, row in data.iterrows():
         'Is Woman Owned?': row['Is Woman Owned?'],
         'Is First Time Borrower?': row['Is First Time Borrower?']
     }
-    producer.send('loan_transactions', value=message)
-    time.sleep(0.1)  # Simulate real-time data streaming
+    print(f"Sending: {message}")
+    producer.send('advanceddb', value=message)
+    time.sleep(1.4)  # Simulate real-time data streaming
 
 # Flush and close the producer
 producer.flush()
