@@ -1,5 +1,7 @@
 package com.flink;
 
+import java.net.URL;
+
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -16,9 +18,12 @@ public class App {
             final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
             LOG.info("Reading the CSV file...");
-            // Read the CSV file
+            // Access the CSV file from the resources directory
+
+            URL url = App.class.getClassLoader().getResource("data/test.csv");
+
             DataSet<Tuple3<String, String, Integer>> csvInput = env
-                    .readCsvFile("data/test.csv")
+                    .readCsvFile(url.toURI().toString())
                     .ignoreFirstLine()
                     .parseQuotedStrings('"')
                     .types(String.class, String.class, Integer.class);
