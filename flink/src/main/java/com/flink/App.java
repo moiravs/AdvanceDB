@@ -5,47 +5,65 @@ import java.net.URL;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple18;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class App {
-    private static final Logger LOG = LoggerFactory.getLogger(App.class);
-
     public static void main(String[] args) throws Exception {
         try {
-            // Set up the execution environment
-            LOG.info("Setting up the execution environment...");
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput = App
+                    .readCsv("data/loan_transactions.csv");
 
-            LOG.info("Reading the CSV file...");
-            // Access the CSV file from the resources directory
-            URL url = App.class.getClassLoader().getResource("data/loan_transactions.csv");
-            if (url == null) {
-                throw new RuntimeException("CSV file not found in resources directory");
-            }
+            System.out.println("Starting benchmark");
+            App.benchmark(100000, csvInput);
 
-            // Read the CSV file
-            DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput = env
-                    .readCsvFile(url.toURI().toString())
-                    .ignoreFirstLine()
-                    .parseQuotedStrings('"')
-                    .includeFields("111111111111111111") // Include all fields
-                    .types(String.class, String.class, String.class, Double.class, String.class, String.class,
-                            String.class, String.class, String.class, String.class, String.class, String.class,
-                            String.class, Integer.class, Integer.class, String.class, String.class, String.class);
-
-            LOG.info("Processing the data...");
-            // Process the data
-            DataSet<String> processed = csvInput.map((
-                    Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String> value) -> "Processed: "
-                            + value);
-
-            LOG.info("Printing the processed data to the console...");
-            // Print the processed data to the console
-            processed.print();
         } catch (Exception e) {
-            LOG.error("Error executing Flink job", e);
+            System.out.println("Error executing Flink job" + e);
             throw e;
         }
     }
+
+    public static DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> readCsv(
+            String path) throws Exception {
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        URL url = App.class.getClassLoader().getResource(path);
+        if (url == null) {
+            throw new RuntimeException("CSV file not found in resources directory");
+        }
+
+        // Read the CSV file
+        DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput = env
+                .readCsvFile(url.toURI().toString())
+                .ignoreFirstLine()
+                .parseQuotedStrings('"')
+                .includeFields("111111111111111111") // Include all fields
+                .types(String.class, String.class, String.class, Double.class, String.class, String.class,
+                        String.class, String.class, String.class, String.class, String.class, String.class,
+                        String.class, Integer.class, Integer.class, String.class, String.class, String.class);
+
+        return csvInput;
+    }
+
+    public static void benchmark(Integer number,
+            DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput)
+            throws Exception {
+        DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> limitedCsvInput = csvInput
+                .first(number);
+
+        // Process the data
+
+        // Time the data processing
+        long startTime = System.currentTimeMillis();
+
+        DataSet<String> processed = limitedCsvInput.map((
+                Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String> value) -> "Processed: "
+                        + value);
+
+        processed.print();
+
+        System.out
+                .println("Time taken for " + number + " requests: " + (System.currentTimeMillis() - startTime) / 1000.0
+                        + " seconds");
+
+    }
+
 }
