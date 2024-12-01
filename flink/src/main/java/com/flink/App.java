@@ -1,69 +1,37 @@
 package com.flink;
 
-import java.net.URL;
+import java.util.Properties;
 
-import org.apache.flink.api.java.DataSet;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple18;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        try {
-            DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput = App
-                    .readCsv("data/loan_transactions.csv");
+        // Connect to kafka
+        String kafkaServer = "localhost:9092";
+        String topic = "advanceddb";
+        String groupId = "flink";
+        StreamExecutionEnvironment environment = StreamExecutionEnvironment
+                .getExecutionEnvironment();
 
-            System.out.println("Starting benchmark");
-            App.benchmark(100000, csvInput);
+        FlinkKafkaConsumer<String> kafkaConsumer = createStringConsumerForTopic(topic, kafkaServer, groupId);
 
-        } catch (Exception e) {
-            System.out.println("Error executing Flink job" + e);
-            throw e;
-        }
+        DataStream<String> stringInputStream = environment.addSource(kafkaConsumer);
+
     }
 
-    public static DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> readCsv(
-            String path) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+    public static FlinkKafkaConsumer<String> createStringConsumerForTopic(
+            String topic, String kafkaAddress, String kafkaGroup) {
 
-        URL url = App.class.getClassLoader().getResource(path);
-        if (url == null) {
-            throw new RuntimeException("CSV file not found in resources directory");
-        }
+        Properties props = new Properties();
+        props.setProperty("bootstrap.servers", kafkaAddress);
+        props.setProperty("group.id", kafkaGroup);
+        FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(
+                topic, new SimpleStringSchema(), props);
 
-        // Read the CSV file
-        DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput = env
-                .readCsvFile(url.toURI().toString())
-                .ignoreFirstLine()
-                .parseQuotedStrings('"')
-                .includeFields("111111111111111111") // Include all fields
-                .types(String.class, String.class, String.class, Double.class, String.class, String.class,
-                        String.class, String.class, String.class, String.class, String.class, String.class,
-                        String.class, Integer.class, Integer.class, String.class, String.class, String.class);
-
-        return csvInput;
-    }
-
-    public static void benchmark(Integer number,
-            DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> csvInput)
-            throws Exception {
-        DataSet<Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String>> limitedCsvInput = csvInput
-                .first(number);
-
-        // Process the data
-
-        // Time the data processing
-        long startTime = System.currentTimeMillis();
-
-        DataSet<String> processed = limitedCsvInput.map((
-                Tuple18<String, String, String, Double, String, String, String, String, String, String, String, String, String, Integer, Integer, String, String, String> value) -> "Processed: "
-                        + value);
-
-        processed.print();
-
-        System.out
-                .println("Time taken for " + number + " requests: " + (System.currentTimeMillis() - startTime) / 1000.0
-                        + " seconds");
-
+        return consumer;
     }
 
 }

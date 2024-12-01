@@ -3,3 +3,4 @@ venv-*
 data/*
 flink/target/*
 .idea
+kafka/target/*

@@ -10,23 +10,35 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <flink.version>1.14.4</flink.version>
     </properties>
 
-   <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-core -->
-        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-streaming-scala -->
+    <dependencies>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-scala_2.11</artifactId>
-            <version>1.12.2</version>
+            <artifactId>flink-java</artifactId>
+            <version>${flink.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-clients -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_2.11</artifactId>
-            <version>1.12.2</version>
+            <artifactId>flink-streaming-java_2.11</artifactId>
+            <version>${flink.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka_2.11</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -41,25 +53,17 @@
                 </configuration>
             </plugin>
             <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>exec-maven-plugin</artifactId>
-    <version>1.2.1</version>
-    <executions>
-      <execution>
-        <goals>
-          <goal>exec</goal>
-        </goals>
-      </execution>
-    </executions>
-    <configuration>
-      <executable>java</executable>
-      <includeProjectDependencies>true</includeProjectDependencies>
-      <includePluginDependencies>true</includePluginDependencies>
-      <classpathScope>compile</classpathScope>
-      <mainClass>com.flink.App</mainClass>
-    </configuration>
-</plugin>
-
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <mainClass>com.flink.App</mainClass>
+                    <arguments>
+                        <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
+                        <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
