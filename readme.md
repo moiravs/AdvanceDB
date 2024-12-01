@@ -106,10 +106,8 @@ yay apache-flink
 # to start a server with port 9999 (not when testing with .csv)
 nc -lk 9999
 
-mvn clean package
-
-# start java (change with your path)
-/home/moira/.cache/yay/apache-flink/src/flink-1.20.0/bin/flink run -c com.flink.App target/flink-1.0-SNAPSHOT.jar
+mvn clean
+mvn -e -f pom.xml compile exec:java
 
 
 ```
