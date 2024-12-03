@@ -4,3 +4,4 @@ data/*
 flink/target/*
 .idea
 kafka/target/*
+venv

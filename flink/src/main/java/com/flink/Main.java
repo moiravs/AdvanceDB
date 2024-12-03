@@ -10,28 +10,36 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // Connect to kafka
+        // kafla topic information
         String kafkaServer = "localhost:9092";
         String topic = "advanceddb";
         String groupId = "flink";
+        // create a flink environment
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
+        // creating special kafka consumer for flink
         KafkaSource<String> kafkaSource = createStringConsumerForTopic(topic, kafkaServer, groupId);
-
+        // set kafka source as a source for flink
         DataStream<String> stringInputStream = environment.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(),
                 "Kafka Source");
 
-        // Print the stream
+        /*
+        * Flint interface for defining how to results from DataStream should be processed.
+        **/
         SinkFunction<String> sink = new SinkFunction<String>() {
             @Override
             public void invoke(String value, Context context) throws Exception {
                 System.out.println(value);
             }
         };
+        // set the handler for results
         stringInputStream.addSink(sink);
-
+        // start the flink environment to start getting records from kafka source and print them on the console.
         environment.execute("Flink Kafka Consumer");
     }
-
+    /*
+    *Function used to create a kafka consumer specialy for flink
+    *
+    **/
     public static KafkaSource<String> createStringConsumerForTopic(
             String topic, String kafkaAddress, String kafkaGroup) {
         KafkaSource<String> source = KafkaSource.<String>builder()
