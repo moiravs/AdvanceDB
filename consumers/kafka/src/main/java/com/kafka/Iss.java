@@ -8,7 +8,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
-public class Main {
+public class Iss {
     public static void main(String[] args) {
         // Parameters
         String kafkaServer = "localhost:9092";

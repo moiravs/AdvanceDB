@@ -1,7 +1,7 @@
 .venv
 venv-*
 data/*
-flink/target/*
+consumers/flink/target/*
 .idea
-kafka/target/*
+consumers/kafka/target/*
 venv

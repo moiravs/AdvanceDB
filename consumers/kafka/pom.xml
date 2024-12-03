@@ -8,13 +8,22 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <javafx.version>17.0.1</javafx.version>
     </properties>
 
     <dependencies>
-        
-        
+    <dependency>
+    <groupId>org.jfree</groupId>
+    <artifactId>jfreechart</artifactId>
+    <version>1.5.3</version>
+</dependency>
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.8.8</version>
+</dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -39,8 +48,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -48,10 +57,12 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.kafka.Main</mainClass>
+                    <mainClass>com.kafka.Stock</mainClass>
                     <arguments>
-                        <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
-                        <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
+                        <argument>--module-path</argument>
+                        <argument>${java.home}/lib/javafx-sdk-${javafx.version}/lib</argument>
+                        <argument>--add-modules</argument>
+                        <argument>javafx.controls,javafx.web</argument>
                     </arguments>
                 </configuration>
             </plugin>
