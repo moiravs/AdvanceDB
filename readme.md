@@ -186,6 +186,52 @@ sudo -iu postgres psql -d streamdb -c
 ```
 
 ## DataSet to benchmark
+### Ubuntu
+#### Preconfiguration
+
+To use the benchmarks yahoo, you will need to install leiningen and leiningen also need java
+```
+sudo apt update
+sudo apt install openjdk-11-jdk
+java -version
+```
+Then you can install and use leiningen. Install curl with apt install if you don't have curl.
+```
+curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o lein
+chmod +x lein
+sudo mv lein /usr/local/bin/
+```
+Run leiningen to complete the installation and you can use --version to check if the installation is done.
+```
+lein
+lein --version
+```
+#### Benchmarks Installation
+Download the benchmarks
+```
+git clone https://github.com/yahoo/streaming-benchmarks.git
+```
+To install all dependencies. Attention it will install each streaming database for which it have a benchmark. Take a very long time.
+```
+./stream-bench.sh SETUP
+```
+#### Configuring
+In the file located at conf/benchmarkConf.yaml
+You have to configure the kafka topic and create the topic if not exists or you can just put a viable topic here.
+then you also have to launch kafka server and flink server.
+#### running benchmarks
+```
+cd flink-benchmarks
+flink run target/flink-benchmarks-0.1.0.jar --confPath ../conf/benchmarkConf.yaml
+```
+now you can monitor on http://localhost:8081/#/overview
+
+
+
+Testing Flink on single node
+```
+./stream-bench.sh FLINT_TEST
+```
 
 https://github.com/yahoo/streaming-benchmarks
 
