@@ -152,9 +152,12 @@ rm flink-1.14.4-bin-scala_2.12.tgz
 ```
 
 #### Launching a Flink cluster
-
-We launch zookeeper then kafka, maybe you will need to launch them in background for being able to launch them at the same time.
-
+Before launching Flink, you can edit the conf in /opt/Flink/conf/flink-conf.yaml and add:
+```
+metrics.reporters:jmx, prometheus
+metrics.reporters.jmx.class: org.apache.flink.metrics.jmx.JMXReporter
+metrics.reporters.prometheus.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+```
 ```
 /opt/Flink/bin/start-cluster.sh
 ```
@@ -191,6 +194,7 @@ sudo -iu postgres psql -d streamdb -c
 ```
 
 ## DataSet to benchmark
+<!--
 ### Ubuntu
 #### Preconfiguration
 
@@ -225,8 +229,9 @@ In the file located at conf/benchmarkConf.yaml
 You have to configure the kafka topic and create the topic if not exists or you can just put a viable topic here.
 then you also have to launch kafka server and flink server.
 #### running benchmarks
+-->
 ```
-cd consumer/flink
+cd consumers/flink
 /opt/Flink/bin/flink run -c com.flink.Main target/flink-java-project-1.0-SNAPSHOT.jar 
 ```
 now you can monitor on http://localhost:8081/#/overview
