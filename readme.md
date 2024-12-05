@@ -67,9 +67,9 @@ java -version
 Then you need to download and set kafka
 
 ```
-wget https://downloads.apache.org/kafka/<version>/kafka_2.13-<version>.tgz
-tar -xvzf kafka_2.13-<version>.tgz
-sudo mv kafka_2.13-<version> /opt/kafka
+wget https://downloads.apache.org/kafka/<version>/kafka_2.12-<version>.tgz
+tar -xvzf kafka_2.12-<version>.tgz
+sudo mv kafka_2.12-<version> /opt/kafka
 ```
 
 Create folder for logs for kafka and zookeeper
@@ -137,13 +137,16 @@ sudo apt update
 sudo apt install openjdk-11-jdk
 java -version
 ```
-
+you also need ssh
+```
+sudo apt install openssh-server -y
+```
 #### Installing Flink
 
 ```
-wget https://archive.apache.org/dist/flink/flink-1.18.0/flink-1.18.0-bin-scala_2.12.tgz
-tar -xzvf flink-1.18.0-bin-scala_2.12.tgz
-sudo mv flink-1.18.0 /opt/Flink
+wget https://archive.apache.org/dist/flink/flink-1.14.4/flink-1.14.4-bin-scala_2.12.tgz
+tar -xzvf flink-1.14.4-bin-scala_2.12.tgz
+sudo mv flink-1.14.4 /opt/Flink
 ```
 
 #### Launching a Flink cluster
