@@ -1,5 +1,6 @@
 package com.flink;
 
+import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -7,6 +8,7 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -16,6 +18,12 @@ public class Main {
         String groupId = "flink";
         // create a flink environment
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
+        // Enable checkpointing (commit offsets during checkpoints)
+        environment.enableCheckpointing(1000); // Checkpoint every 1000 ms (1 second)
+        environment.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);  // Ensure exactly-once semantics
+        environment.getCheckpointConfig().setMinPauseBetweenCheckpoints(500); // Pause between checkpoints
+        environment.getCheckpointConfig().setCheckpointTimeout(60000); // Timeout for checkpoint
+
         // creating special kafka consumer for flink
         KafkaSource<String> kafkaSource = createStringConsumerForTopic(topic, kafkaServer, groupId);
         // set kafka source as a source for flink
