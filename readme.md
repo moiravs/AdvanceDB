@@ -245,6 +245,38 @@ Testing Flink on single node
 ./stream-bench.sh FLINT_TEST
 ```
 
+## Kafka benchmark
+Use kafka-producer-perf-test.sh & kafka-consumer-perf-test.sh
+
+1) Create topic:
+    kafka-topics.sh --create --topic test-topic --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+2) Porducer benchmark:
+    kafka-producer-perf-test.sh --topic test-topic --num-records 1000000 --record-size 100 --throughput -1 --producer-props bootstrap.servers=localhost:9092
+Parameters:
+    --topic test-topic : the Kafka topic where the messages will be sent.
+    --num-records 1000000 : the number of messages to be sent.
+    --record-size 100 : the size of each message in bytes.
+    --throughput -1: sends messages as quickly as possible.
+    --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.
+
+3) Consumer benchmark:
+    kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic test-topic --messages 1000000 --threads 1 --timeout 10000
+Parameters:
+    --bootstrap-server localhost:9092 : the address of the Kafka server.
+    --topic test-topic : the Kafka topic from which messages will be consumed.
+    --messages 1000000 : the number of messages to be consumed.
+    --threads 1 : the number of consuming threads.
+    --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.
+
+4) Clean
+    kafka-topics.sh --delete --topic test-topic --bootstrap-server localhost:9092
+
+Notes:
+    - use a Python script with the confluent-kafka library to send the data.
+    - Run the benchmarks several times (min 6 times, ignore the first result).
+
+
 https://github.com/yahoo/streaming-benchmarks
 
 https://catalog.data.gov/dataset/development-credit-authority-dca-data-set-loan-transactions-a8dbe
