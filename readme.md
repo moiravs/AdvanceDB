@@ -67,9 +67,10 @@ java -version
 Then you need to download and set kafka
 
 ```
-wget https://downloads.apache.org/kafka/<version>/kafka_2.12-<version>.tgz
-tar -xvzf kafka_2.12-<version>.tgz
-sudo mv kafka_2.12-<version> /opt/kafka
+wget https://downloads.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz
+tar -xvzf kafka_2.12-3.9.0.tgz
+sudo mv kafka_2.12-3.9.0 /opt/kafka
+rm kafka_2.12-3.9.0.tgz
 ```
 
 Create folder for logs for kafka and zookeeper
@@ -147,6 +148,7 @@ sudo apt install openssh-server -y
 wget https://archive.apache.org/dist/flink/flink-1.14.4/flink-1.14.4-bin-scala_2.12.tgz
 tar -xzvf flink-1.14.4-bin-scala_2.12.tgz
 sudo mv flink-1.14.4 /opt/Flink
+rm flink-1.14.4-bin-scala_2.12.tgz
 ```
 
 #### Launching a Flink cluster
@@ -224,8 +226,8 @@ You have to configure the kafka topic and create the topic if not exists or you 
 then you also have to launch kafka server and flink server.
 #### running benchmarks
 ```
-cd flink-benchmarks
-flink run target/flink-benchmarks-0.1.0.jar --confPath ../conf/benchmarkConf.yaml
+cd consumer/flink
+/opt/Flink/bin/flink run -c com.flink.Main target/flink-java-project-1.0-SNAPSHOT.jar 
 ```
 now you can monitor on http://localhost:8081/#/overview
 
