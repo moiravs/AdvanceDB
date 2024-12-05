@@ -235,9 +235,11 @@ cd consumers/flink
 /opt/Flink/bin/flink run -c com.flink.Main target/flink-java-project-1.0-SNAPSHOT.jar 
 ```
 now you can monitor on http://localhost:8081/#/overview
-
-
-
+We can also check on virtualVM
+```
+sudo apt install visualvm
+visualVM
+```
 Testing Flink on single node
 ```
 ./stream-bench.sh FLINT_TEST
