@@ -29,14 +29,16 @@ public class Main {
         // set kafka source as a source for flink
         DataStream<String> stringInputStream = environment.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(),
                 "Kafka Source");
-
         /*
         * Flint interface for defining how to results from DataStream should be processed.
         **/
         SinkFunction<String> sink = new SinkFunction<String>() {
+            private long messageCounter = 0;
             @Override
             public void invoke(String value, Context context) throws Exception {
+                messageCounter ++;
                 System.out.println(value);
+                System.out.println(String.format("messageCounter: %d", messageCounter));
             }
         };
         // set the handler for results

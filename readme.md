@@ -99,7 +99,14 @@ Creating a topic which is an platform used to transfer data from producters to c
 ```
 /opt/kafka/bin/kafka-topics.sh --create --topic advanceddb --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 ```
-
+You can also delete a topic and recreate it to clear the data inside
+```
+/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --topic advanceddb --delete
+```
+if the deletion is unsuccessfull, you can add the option in the config file of kafka server. in server.properties
+```
+delete.topic.enable=true
+```
 #### Library installation for coding
 
 Installing library for compatibity with python
