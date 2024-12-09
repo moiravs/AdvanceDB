@@ -1,7 +1,11 @@
-.venv
+.venv/*
 venv-*
-data/*
-consumers/flink/target/*
+*/data/*
 .idea
+venv/*
+*/__pycache__/*
+*/target/*
+consumers/flink/target/*
 consumers/kafka/target/*
-venv
+*.jar
+*.swp
