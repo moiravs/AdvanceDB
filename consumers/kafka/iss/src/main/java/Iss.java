@@ -1,6 +1,5 @@
-package com.kafka;
+package com.kafka.iss;
 
-import java.lang.classfile.instruction.ThrowInstruction;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
