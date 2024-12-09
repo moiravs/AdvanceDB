@@ -7,5 +7,6 @@ venv/*
 */target/*
 consumers/flink/target/*
 consumers/kafka/target/*
+consumers/kafka/cpu/target/*
 *.jar
 *.swp

@@ -1,4 +1,4 @@
-package com.kafka;
+package com.kafka.cpu;
 
 import java.awt.Color;
 import java.awt.Dimension;

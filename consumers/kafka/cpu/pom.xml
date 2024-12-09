@@ -58,7 +58,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>cpu</mainClass>
+                    <mainClass>com.kafka.cpu.Cpu</mainClass>
                     <arguments>
                         <argument>--module-path</argument>
                         <argument>${java.home}/lib/javafx-sdk-${javafx.version}/lib</argument>
