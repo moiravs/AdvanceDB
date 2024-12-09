@@ -5,7 +5,8 @@ producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=la
 
 i = 10
 while i:
-	randomTemperature = randint(30, 100)
+	randomTemperature = randint(30, 100)*1000
+	print(f"{randomTemperature/1000}°C")
 	producer.send('cpu', value=randomTemperature)
 	i -= 1
 
