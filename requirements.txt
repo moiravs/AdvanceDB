@@ -1,3 +1,4 @@
 kafka-python
 kafka-python-ng
 psycopg2
+requests
