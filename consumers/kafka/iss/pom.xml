@@ -2,12 +2,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.kafka</groupId>
-        <artifactId>kafka-java-project</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </parent>
-    <artifactId>kafka-iss</artifactId>
+    <groupId>com.iss</groupId>
+    <artifactId>iss-java-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -68,7 +65,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>Iss</mainClass>
+                    <mainClass>com.iss.Iss</mainClass>
                     <arguments>
                         <argument>--module-path</argument>
                         <argument>${java.home}/lib/javafx-sdk-${javafx.version}/lib</argument>
