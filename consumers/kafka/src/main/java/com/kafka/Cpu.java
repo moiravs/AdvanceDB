@@ -27,7 +27,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class Stock {
+public class Cpu {
     private static Map<String, TimeSeries> seriesMap = new HashMap<>();
     private static TimeSeriesCollection dataset = new TimeSeriesCollection();
 
