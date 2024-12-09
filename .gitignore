@@ -8,5 +8,11 @@ venv/*
 consumers/flink/target/*
 consumers/kafka/target/*
 consumers/kafka/cpu/target/*
+consumers/kafka/iss/target/*
+consumers/flink/cpu/target/*
+consumers/flink/iss/target/*
+consumers/flink/iss/target/classes/*.class
+trad_db/iss/target/*
+trad_db/cpu/target/*
 *.jar
 *.swp
