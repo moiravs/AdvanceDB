@@ -29,10 +29,6 @@ public class Iss {
         // set kafka source as a source for flink
         DataStream<String> stringInputStream = environment.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(),
                 "Kafka Source");
-        /*
-         * Flint interface for defining how to results from DataStream should be
-         * processed.
-         **/
         SinkFunction<String> sink = new SinkFunction<String>() {
             private long messageCounter = 0;
 
