@@ -1,4 +1,4 @@
-package com.kafka.iss;
+package com.iss;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -82,6 +82,9 @@ public class Iss {
 
         double a = haversine(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversine(dLong);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        double distance = R * c; // in km
+
         double timeDiff = (timestamp2 - timestamp1); // in seconds
 
         return distance / (timeDiff / 3600); // in km/h
