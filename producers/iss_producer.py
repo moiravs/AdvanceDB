@@ -4,6 +4,8 @@ from kafka import KafkaProducer
 import json
 import time
 
+DELAY = 10
+
 # Create a Kafka producer
 producer = KafkaProducer(
     bootstrap_servers='localhost:9092',
@@ -25,7 +27,7 @@ def produce_iss_data():
         }
         print(f"Sending: {message}")
         producer.send('advanceddb', value=message)
-        time.sleep(10)  # Fetch data every 10 seconds
+        time.sleep(DELAY)  # Fetch data every 10 seconds
 
 if __name__ == '__main__':
     produce_iss_data()
