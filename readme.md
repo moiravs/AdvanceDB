@@ -12,7 +12,7 @@ The choice of topic and the application must be made ​​in agreement with the
 
 The duration of the presentation is 45 minutes. It will structured in three parts of SIMILAR length
 
-# Stream DB with: Apache kafka et Apache Flink
+# Stream DB with: Apache kafka and Apache Flink
 
 Kafka and Flink are a distributed event-streaming platform, it doesn't contains a database inside itself because they are
 optimized for real-time data streaming and event processing.
@@ -33,9 +33,9 @@ sudo systemctl start kafka
 sudo systemctl enable kafka
 ```
 
-#### topic creation
+#### Topic creation
 
-Creating a topic which is an platform used to transfer data from producters to consumers.
+Creating a topic which is a platform used to transfer data from producers to consumers.
 
 ```
 /bin/kafka-topics.sh --create --topic advanceddb --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
@@ -82,7 +82,7 @@ sudo mkdir -p /tmp/kafka-logs
 sudo chown -R $USER:$USER /tmp/kafka-logs
 ```
 
-#### launching Kafka
+#### Launching Kafka
 
 We launch zookeeper then kafka, maybe you will need to launch them in background for being able to launch them at the same time.
 
@@ -92,9 +92,9 @@ We launch zookeeper then kafka, maybe you will need to launch them in background
 /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 ```
 
-#### topic creation
+#### Topic creation
 
-Creating a topic which is an platform used to transfer data from producters to consumers.
+Creating a topic which is an platform used to transfer data from producers to consumers.
 
 ```
 /opt/kafka/bin/kafka-topics.sh --create --topic advanceddb --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
@@ -107,6 +107,7 @@ if the deletion is unsuccessfull, you can add the option in the config file of k
 ```
 delete.topic.enable=true
 ```
+
 #### Library installation for coding
 
 Installing library for compatibity with python
@@ -118,7 +119,7 @@ pip install kafka-python-ng
 
 ## Apache Flink
 
-### Arch:
+### Arch Installation :
 
 ```
 yay apache-flink
@@ -145,10 +146,11 @@ sudo apt update
 sudo apt install openjdk-11-jdk
 java -version
 ```
-you also need ssh
+you also need ssh server
 ```
 sudo apt install openssh-server -y
 ```
+
 #### Installing Flink
 
 ```
