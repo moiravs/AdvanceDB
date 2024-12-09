@@ -23,29 +23,29 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-
+import java.nio.ByteBuffer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class Cpu {
     private static Map<String, TimeSeries> seriesMap = new HashMap<>();
     private static TimeSeriesCollection dataset = new TimeSeriesCollection();
+    private static String key = "cpu";
 
     public static void main(String[] args) {
         // Kafka consumer configuration
         String kafkaServer = "localhost:9092";
-        String topic = "advanceddb";
-        String groupId = "kafka";
+        String topic = "cpu";
+        String groupId = "cpu";
 
         Properties props = new Properties();
         props.put("bootstrap.servers", kafkaServer);
         props.put("group.id", groupId);
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
         // Predefine the stock symbols you expect to receive
-        String[] stockSymbols = { "HBARFDUSD", "MEMEUSDC", "TROYUSDC", "WLDEUR", "1MBABYDOGEUSDC", "CETUSUSDC",
-                "COWUSDC", "DYDXUSDC", "HMSTRUSDC", "TURBOUSDC" };
+
+        String[] stockSymbols = { key};
 
         // Initialize TimeSeries for all expected stock symbols
         for (String symbol : stockSymbols) {
@@ -53,9 +53,8 @@ public class Cpu {
             seriesMap.put(symbol, series);
             dataset.addSeries(series);
         }
-
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Stock Market Chart");
+            JFrame frame = new JFrame("Temperature");
 
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.add(createChartPanel());
@@ -64,33 +63,33 @@ public class Cpu {
             frame.setVisible(true);
         });
 
-        try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
+        try (KafkaConsumer<String, byte[]> consumer = new KafkaConsumer<>(props)) {
             consumer.subscribe(Collections.singletonList(topic));
 
             while (true) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, byte[]> records = consumer.poll(Duration.ofMillis(1000));
+                if (!records.isEmpty()){
+                    System.out.println("Getting a records");
+                    for (ConsumerRecord<String, byte[]> record : records) {
+                        System.out.println("processing a record");
+                        try {
+                            //JsonObject jsonObject = JsonParser.parseString(value).getAsJsonObject();
+                            //Integer temperature = jsonObject.get("temperature").getAsInt();
+                            long timestamp = System.currentTimeMillis() / 1000; // Use current time as timestamp
+                            int value = ByteBuffer.wrap(record.value()).getInt();
+                            System.out.println(value);
+                            TimeSeries series = seriesMap.get(key);
 
-                for (ConsumerRecord<String, String> record : records) {
-                    String value = record.value();
-                    try {
-                        JsonObject jsonObject = JsonParser.parseString(value).getAsJsonObject();
-                        String symbol = jsonObject.get("symbol").getAsString(); // Assuming the symbol is in the
-                                                                                // "symbol" field
-                        double priceChange = jsonObject.get("priceChange").getAsDouble(); // Assuming the price change
-                                                                                          // is in the "priceChange"
-                                                                                          // field
-                        long timestamp = System.currentTimeMillis() / 1000; // Use current time as timestamp
 
-                        // Get the TimeSeries for the stock symbol
-                        TimeSeries series = seriesMap.get(symbol);
-
-                        // Add data to the series
-                        if (series != null) {
-                            series.addOrUpdate(new Second(new java.util.Date(timestamp * 1000)), priceChange);
+                            // Add data to the series
+                            if (series != null) {
+                                series.addOrUpdate(new Second(new java.util.Date(timestamp * 1000)), value/1000);
+                            }else{
+                                System.out.println("key don't have a serie");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Error parsing record.");
                         }
-                    } catch (Exception e) {
-                        System.err.println("Error parsing record: " + value);
-                        e.printStackTrace();
                     }
                 }
             }
@@ -98,9 +97,9 @@ public class Cpu {
     }
 
     private static JPanel createChartPanel() {
-        String chartTitle = "Stock Market Data";
+        String chartTitle = "Temperature";
         String xAxisLabel = "Time";
-        String yAxisLabel = "Price Change";
+        String yAxisLabel = "C";
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, xAxisLabel, yAxisLabel, dataset);
 
