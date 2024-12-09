@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-    	<module>Iss</module>
-    	<module>Cpu</module>
+    	<module>kafka-iss</module>
+    	<module>kafka-cpu</module>
     </modules>
 </project>
