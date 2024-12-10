@@ -1,40 +1,33 @@
-import socket
+from flask import Flask, request, jsonify
 import pandas as pd
 import json
 import time
+import threading
 
-def start_server(host='localhost', port=9999):
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind((host, port))
-    server_socket.listen(1)
-    print(f"Server listening on {host}:{port}")
+app = Flask(__name__)
 
-    while True:
-        client_socket, addr = server_socket.accept()
-        print(f"Connection from {addr}")
-        send_data(client_socket)
-        client_socket.close()
+data = pd.read_csv('../chat.csv')
 
-def send_data(client_socket):
-    data = pd.read_csv('../chat.csv')
+@app.route('/stream', methods=['GET'])
+def stream_data():
+    def generate():
+        for index, row in data.iterrows():
+            message = {
+                'target': row[0],
+                'id': row[1],
+                'date': row[2],
+                'flag': row[3],
+                'user': row[4],
+                'text': row[5]
+            }
+            message_str = json.dumps(message) + '\n'
+            print(f"Sending message: {message_str}")
+            yield message_str
+            time.sleep(1)  # Simulate real-time data streaming
+    return app.response_class(generate(), mimetype='application/json')
 
-    for index, row in data.iterrows():
-        message = {
-            'target': row[0],
-            'id': row[1],
-            'date': row[2],
-            'flag': row[3],
-            'user': row[4],
-            'text': row[5]
-        }
-        message_str = json.dumps(message) + '\n'
-        print(f"Sending message: {message_str}")
-        try:
-            client_socket.sendall(message_str.encode('utf-8'))
-        except Exception as e:
-            print(f"Failed to send message: {e}")
-            break
-        time.sleep(1)  # Simulate real-time data streaming
+def start_server():
+    app.run(host='localhost', port=5000)
 
 if __name__ == "__main__":
-    start_server()
+    threading.Thread(target=start_server).start()
