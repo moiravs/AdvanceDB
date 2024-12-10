@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Flink {
     public static void main(String[] args) throws IOException {
         // kafla topic information
-        String banListFile = "../../banlist.txt";
 
         String kafkaServer = "localhost:9092";
         String topic = "chat";
@@ -40,35 +39,14 @@ public class Flink {
         DataStream<String> stringInputStream = environment.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(),
                 "Kafka Source");
 
+        String banListFile = "../../banlist.txt";
+        String[] banWords = Files.readAllLines(Paths.get(banListFile)).toArray(String[]::new);
+
         SinkFunction<String> sink = new SinkFunction<String>() {
 
             @Override
             public void invoke(String value, Context context) throws Exception {
-                String banListFile = "../../banlist.txt";
-                String[] banWords = Files.readAllLines(Paths.get(banListFile)).toArray(String[]::new);
-
-                Map<String, String> valueMap = new ObjectMapper().readValue(value,
-                        new TypeReference<Map<String, String>>() {
-                        });
-
-                if (checkWordBan(valueMap.get("text"), banWords)) {
-                    System.out.println("\u001B[31m" +
-                            valueMap.get("date") + " || " + valueMap.get("user") + ": Message contains banned word"
-                            + "\u001B[0m");
-                    return;
-                }
-                System.out.println(valueMap.get("date") + " || " + valueMap.get("user") + ": " + valueMap.get("text"));
-
-            }
-
-            public boolean checkWordBan(String text, String[] bannedWords) {
-                for (String word : bannedWords) {
-                    if (text.contains(word)) {
-                        return true;
-                    }
-                }
-                return false;
-
+                Utils.processMessage(value, banWords);
             }
         };
         // set the handler for results
