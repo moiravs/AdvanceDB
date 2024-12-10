@@ -1,12 +1,14 @@
 package com.flink;
 
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.core.fs.FileSystem;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.datastream.BroadcastStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.api.common.serialization.SimpleStringEncoder;
-import org.apache.flink.api.common.serialization.Encoder;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
+import org.apache.flink.util.Collector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,60 +20,59 @@ import java.util.Set;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        // Set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        // Read the ban list into a Set
+        // Load the ban list locally
         Set<String> banList = loadBanList("../../banlist.txt");
+        DataStream<Set<String>> banListStream = env.fromElements(banList);
 
-        // Read the CSV file into a DataStream
+        // Create a broadcast state descriptor
+        MapStateDescriptor<Void, Set<String>> broadcastStateDescriptor = 
+            new MapStateDescriptor<>("banList", Void.class, (Class<Set<String>>) (Class<?>) Set.class);
+
+        // Broadcast the ban list
+        BroadcastStream<Set<String>> broadcastBanList = banListStream.broadcast(broadcastStateDescriptor);
+
+        // Read messages
         DataStream<String> messages = env.readTextFile("../../chat.csv");
 
-        // Filter messages based on the 6th column (index 5)
-        DataStream<String> acceptedMessages = messages.filter(new FilterFunction<String>() {
-            @Override
-            public boolean filter(String line) throws Exception {
-                // Split the line by comma
-                String[] columns = line.split(",");
-                if (columns.length >= 6) {
-                    String message = columns[5]; // Get the 6th column (index 5)
-                    // Check if the message contains any word in the ban list
-                    for (String word : banList) {
-                        if (message.contains(word)) {
-                            return false; // Message is banned
-                        }
-                    }
-                    return true; // Message is accepted
-                }
-                return false; // Invalid line
-            }
-        });
+        // Process messages with the broadcasted ban list
+        DataStream<Tuple2<String, Boolean>> processedMessages = messages
+            .connect(broadcastBanList)
+            .process(new BroadcastProcessFunction<String, Set<String>, Tuple2<String, Boolean>>() {
+                private transient Set<String> banList;
 
-        // Filter banned messages
-        DataStream<String> bannedMessages = messages.filter(new FilterFunction<String>() {
-            @Override
-            public boolean filter(String line) throws Exception {
-                String[] columns = line.split(",");
-                if (columns.length >= 6) {
-                    String message = columns[5];
-                    for (String word : banList) {
-                        if (message.contains(word)) {
-                            return true; // Message is banned
+                @Override
+                public void processElement(String message, ReadOnlyContext ctx, Collector<Tuple2<String, Boolean>> out) {
+                    try {
+                        String[] columns = message.split(",");
+                        if (columns.length >= 6) {
+                            String content = columns[5];
+                            boolean isBanned = banList.stream().anyMatch(content::contains);
+                            out.collect(Tuple2.of(message, !isBanned)); // true = accepted, false = banned
                         }
+                    } catch (Exception e) {
+                        System.err.println("Error processing message: " + e.getMessage());
                     }
                 }
-                return false; // Message is not banned
-            }
-        });
 
-        // Write accepted and banned messages to separate output files
-        acceptedMessages.writeAsText("accepted-messages.csv", FileSystem.WriteMode.OVERWRITE)
-                        .setParallelism(1); // Optional: set parallelism for single-threaded output
+                @Override
+                public void processBroadcastElement(Set<String> value, Context ctx, Collector<Tuple2<String, Boolean>> out) {
+                    banList = value;
+                }
+            });
 
-        bannedMessages.writeAsText("banned-messages.csv", FileSystem.WriteMode.OVERWRITE)
-                       .setParallelism(1); // Optional: set parallelism for single-threaded output
+        // Write accepted and banned messages to separate files
+        processedMessages
+            .filter(tuple -> tuple.f1) // Accepted
+            .map(tuple -> tuple.f0)
+            .writeAsText("accepted-messages.csv", FileSystem.WriteMode.OVERWRITE).setParallelism(1);
 
-        // Execute the Flink job
+        processedMessages
+            .filter(tuple -> !tuple.f1) // Banned
+            .map(tuple -> tuple.f0)
+            .writeAsText("banned-messages.csv", FileSystem.WriteMode.OVERWRITE).setParallelism(1);
+
         env.execute("Message Filtering Job");
     }
 
@@ -80,7 +81,7 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(new File(path)))) {
             String line;
             while ((line = br.readLine()) != null) {
-                banList.add(line.trim()); // Add each line as a banned word
+                banList.add(line.trim());
             }
         }
         return banList;
