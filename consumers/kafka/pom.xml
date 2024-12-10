@@ -2,7 +2,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>kafka</groupId>
+    <groupId>com.kafka</groupId>
     <artifactId>kafka-java-project</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
@@ -49,7 +49,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>kafka.Kafka</mainClass>
+                    <mainClass>com.kafka.Kafka</mainClass>
                 </configuration>
             </plugin>
         </plugins>
