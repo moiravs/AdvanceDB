@@ -10,7 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 public class Kafka {
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) {
         // Parameters
         String kafkaServer = "localhost:9092";
         String topic = "iss";
@@ -35,55 +35,14 @@ public class Kafka {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
                 // print records get
                 for (ConsumerRecord<String, String> record : records) {
+                    System.out.println(record.value());
                     Map<String, String> valueMap = new ObjectMapper().readValue(record.value(),
                             new TypeReference<Map<String, String>>() {
                             });
-                    Double latitude = Double.valueOf(valueMap.get("latitude"));
-                    Double longitude = Double.valueOf(valueMap.get("longitude"));
-                    Integer timestamp = Integer.valueOf(valueMap.get("timestamp")); // secondes
 
-                    if (lastLatitude != null && lastLongitude != null && lastTimestamp != null) {
-                        Double speed;
-                        speed = calculateSpeed(lastLatitude, lastLongitude, lastTimestamp, latitude, longitude,
-                                timestamp);
-                        System.out.println("Speed: " + speed + " km/h");
-                    }
-
-                    lastLatitude = latitude;
-                    lastLongitude = longitude;
-                    lastTimestamp = timestamp;
-
-                }
-            }
+                
         }
 
     }
 
-    // source: https://www.baeldung.com/java-find-distance-between-points
-    static double haversine(double val) {
-        return Math.pow(Math.sin(val / 2), 2);
-    }
-
-    public static Double calculateSpeed(Double startLong, Double endLong, Integer timestamp1, Double startLat,
-            Double endLat, Integer timestamp2) {
-        // Haversine formula
-        double R = 6371; // Radius of the earth in km
-
-        double dLat = Math.toRadians((endLat - startLat));
-        double dLong = Math.toRadians((endLong - startLong));
-
-        startLat = Math.toRadians(startLat);
-        endLat = Math.toRadians(endLat);
-
-        double a = haversine(dLat) + Math.cos(startLat) * Math.cos(endLat) * haversine(dLong);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        double distance = R * c / 1000; // in km
-
-        double timeDiff = (timestamp2 - timestamp1); // in seconds
-
-        return distance / (timeDiff / 3600); // in km/h
-        // 1 h = 3600 s
-
-    }
 }
