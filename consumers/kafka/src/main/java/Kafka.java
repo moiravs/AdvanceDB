@@ -1,4 +1,4 @@
-package com.iss;
+package com.kafka;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -8,11 +8,6 @@ import java.util.Properties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.source.doctree.SerialFieldTree;
 
 public class Kafka {
     public static void main(String[] args) throws JsonProcessingException {
