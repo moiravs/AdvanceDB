@@ -1,66 +1,79 @@
 package com.flink;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-
-import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.util.Collector;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Flink {
-    public static void main(String[] args) {
-        // HTTP server URL
-        String urlString = "http://localhost:5000/";
-		System.out.println("URL: " + urlString);
+    public static void main(String[] args) throws Exception {
+        // Setup the execution environment
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        try {
-            // Create Flink environment
-            StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
+        // Path to the input files (adjust as needed)
+        String inputFilePath = "../../chat.csv";
+        String banListFilePath = "../../banlist.txt";
+        String acceptedOutputPath = "accepted-messages.csv";
+        String bannedOutputPath = "banned-messages.csv";
 
-            // Enable checkpointing with configurations
-            environment.enableCheckpointing(1000); // 1 second
-            environment.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-            environment.getCheckpointConfig().setMinPauseBetweenCheckpoints(500); // 0.5 second
-            environment.getCheckpointConfig().setCheckpointTimeout(60000); // 1 minute
+        // Read and parse the banlist file into a set for quick lookup
+        Set<String> banList = new HashSet<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(banListFilePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                banList.add(line.trim().toLowerCase());
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading the banlist file: " + e.getMessage());
+            return;
+        }
 
-            // Load banned words from file
-            String banListFile = "../../banlist.txt";
-            List<String> banWords = Files.readAllLines(Paths.get(banListFile));
+        // Read the input file into a DataStream
+        DataStream<String> messages = env.readTextFile(inputFilePath);
 
-            // Create a custom source
-            DataStream<String> stringInputStream = environment.addSource(new HttpSource(urlString));
-
-            // Define a sink to process messages
-            SinkFunction<String> sink = new SinkFunction<>() {
-                @Override
-                public void invoke(String value, Context context) {
-                    try {
-                        System.out.println("Processing message: " + value);
-                        Utils.processMessage(value, banWords.toArray(new String[0]));
-                    } catch (Exception e) {
-                        System.err.println("Error processing message: " + e.getMessage());
-                        e.printStackTrace();
+        // Process the messages and filter them
+        DataStream<Tuple2<String, String>> processedMessages = messages.flatMap(new FlatMapFunction<String, Tuple2<String, String>>() {
+            @Override
+            public void flatMap(String message, Collector<Tuple2<String, String>> out) {
+                // Check if any word in the message is in the banlist
+                String[] words = message.toLowerCase().split("\\s+");
+                for (String word : words) {
+                    if (banList.contains(word)) {
+                        // Banned word found
+                        out.collect(new Tuple2<>("banned", message));
+                        return;
                     }
                 }
-            };
+                // If no banned words found, it's accepted
+                out.collect(new Tuple2<>("accepted", message));
+            }
+        });
 
-            // Add sink to the stream
-            stringInputStream.addSink(sink);
+        // Split the stream into accepted and banned messages
+        DataStream<String> acceptedMessages = processedMessages
+                .filter(tuple -> "accepted".equals(tuple.f0))
+                .map(tuple -> tuple.f1);
 
-            // Execute the Flink job
-            System.out.println("Starting Flink job...");
-            environment.execute("Flink Consumer");
-			System.out.println("Flink job started.");
-        } catch (Exception e) {
-            System.err.println("Failed to execute Flink job: " + e.getMessage());
-            e.printStackTrace();
-        }
+        DataStream<String> bannedMessages = processedMessages
+                .filter(tuple -> "banned".equals(tuple.f0))
+                .map(tuple -> tuple.f1);
+
+        // Write the results to separate files
+        acceptedMessages.writeAsText(acceptedOutputPath, FileSystem.WriteMode.OVERWRITE);
+        bannedMessages.writeAsText(bannedOutputPath, FileSystem.WriteMode.OVERWRITE);
+
+        // Execute the Flink job
+        env.execute("Message Filter Job");
     }
 }
+
