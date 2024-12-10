@@ -26,29 +26,19 @@ except:
     print(f"can't join an kafka server")
     exit(1)
 # Load data from the CSV file
-data = pd.read_csv('data/Loan_Transactions.csv')
+data = pd.read_csv('../chat.csv')
 
 # Send data to Kafka topic
 for index, row in data.iterrows():
     message = {
-        'Guarantee Number': row['Guarantee Number'],
-        'Transaction Report ID': row['Transaction Report ID'],
-        'Guarantee Country Name': row['Guarantee Country Name'],
-        'Amount (USD)': row['Amount (USD)'],
-        'Currency Name': row['Currency Name'],
-        'Disbursement Date': row['Disbursement Date'],
-        'End Date': row['End Date'],
-        'Business Sector': row['Business Sector'],
-        'City/Town': row['City/Town'],
-        'State/Province/Region Name': row['State/Province/Region Name'],
-        'State/Province/Region Code': row['State/Province/Region Code'],
-        'State/Province/Region Country Name': row['State/Province/Region Country Name'],
-        'Region Name': row['Region Name'],
-        'Is Woman Owned?': row['Is Woman Owned?'],
-        'Is First Time Borrower?': row['Is First Time Borrower?']
+        'target': row[0],
+        'id': row[1],
+        'date': row[2],
+        'flag': row[3],
+        'user': row[4],
+        'text': row[5]
     }
-    success = send_message(producer, 'advanceddb', message)
-
+    success = send_message(producer, 'iss', message)
     if not success:
         print("Skipping to the next message due to failure.")
         # Optionally, add a delay before retrying

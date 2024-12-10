@@ -9,3 +9,8 @@ consumers/flink/target/*
 consumers/kafka/target/*
 *.jar
 *.swp
+
+**/target/**
+
+
+chat.csv
