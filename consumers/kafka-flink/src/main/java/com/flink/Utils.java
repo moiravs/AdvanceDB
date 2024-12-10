@@ -19,6 +19,7 @@ public class Utils {
             return;
         }
         if (Utils.checkWordBan(valueMap.get("text"), bannedWords)) {
+            Utils.bannedUser.add(valueMap.get("user"));
             System.out.println("\u001B[31m" +
                     valueMap.get("date") + " || " + valueMap.get("user") + ": Message contains banned word"
                     + "\u001B[0m");
