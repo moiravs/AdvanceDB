@@ -19,7 +19,7 @@ try:
 except:
     print(f"can't join kafka server")
     exit(1)
-data = pd.read_csv('../chat.csv')
+data = pd.read_csv('../cleaned_chat.csv', encoding='utf-8')
 
 for index, row in data.iterrows():
     message = {
@@ -28,8 +28,9 @@ for index, row in data.iterrows():
         'date': row[2],
         'flag': row[3],
         'user': row[4],
-        'text': row[5]
+        'text': row[5].encode('latin-1', errors='replace').decode('latin-1')
     }
+    # Safely print the message, replacing characters that can't be encoded
     print(f"Sending message: {message}")
     success = send_message(producer, 'chat', message)
     if not success:
