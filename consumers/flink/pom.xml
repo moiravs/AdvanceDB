@@ -1,87 +1,93 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.flink</groupId>
     <artifactId>flink-java-project</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    <name>flink-java-project</name>
-    <description>A Flink project to filter messages based on a banlist</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <flink.version>1.14.4</flink.version> <!-- Adjust to the version of Flink you are using -->
+        <maven.compiler.release>11</maven.compiler.release>
+        <flink.version>1.20.0</flink.version>
+        <junit.version>4.13.2</junit.version>
     </properties>
 
     <dependencies>
-        <!-- Flink dependencies -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-java</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.12</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_2.12</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
-        <!-- Optional: SLF4J and logging dependencies -->
+        
+        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.30</version>
         </dependency>
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.30</version>
         </dependency>
+       <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-core</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+                        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <source>11</source>
+                    <target>11</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
-
-            <!-- Maven Jar Plugin for adding the Main-Class attribute -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Main-Class>com.flink.Flink</Main-Class> <!-- Change to your main class -->
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!-- Maven Exec Plugin for running the main class -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.flink.Flink</mainClass> <!-- Change to your main class -->
+                    <mainClass>com.flink.Main</mainClass>
+                    <arguments>
+                        <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
+                        <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
+                    </arguments>
                 </configuration>
             </plugin>
+            
+            
         </plugins>
     </build>
 </project>
-
