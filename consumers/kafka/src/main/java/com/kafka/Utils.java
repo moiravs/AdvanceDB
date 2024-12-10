@@ -1,4 +1,4 @@
-package com.flink;
+package com.kafka;
 
 import java.io.IOException;
 import java.util.HashSet;
