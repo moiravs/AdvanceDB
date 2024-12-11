@@ -11,13 +11,11 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <maven.compiler.release>11</maven.compiler.release>
-        <flink.version>1.20.0</flink.version>
-        <junit.version>4.13.2</junit.version>
+        <flink.version>1.14.4</flink.version>
+        <exec.cleanupDaemonThreads>false</exec.cleanupDaemonThreads>
     </properties>
 
     <dependencies>
-        
-        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -35,10 +33,14 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java</artifactId>
+            <artifactId>flink-streaming-java_2.12</artifactId>
             <version>${flink.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka_2.12</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-core</artifactId>
@@ -46,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients</artifactId>
+            <artifactId>flink-clients_2.12</artifactId>
             <version>${flink.version}</version>
         </dependency>
                         <dependency>
@@ -79,7 +81,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.flink.Flink</mainClass>
+                    <mainClass>com.flink.Main</mainClass>
                     <arguments>
                         <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
                         <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
