@@ -1,4 +1,4 @@
-package com.flink;
+package com.kafka_flink;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Flink {
+public class Kafka_Flink {
     public static void main(String[] args) throws IOException {
         // kafla topic information
 
