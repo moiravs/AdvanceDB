@@ -31,6 +31,7 @@ public class Flink {
                 .connect(broadcastBanList)
                 .process(new BroadcastProcessFunction<String, Set<String>, Tuple2<String, Boolean>>() {
                     private transient Set<String> banList;
+                    private transient Set<String> banUserList;
 
                     @Override
                     public void processElement(String message, ReadOnlyContext ctx,
@@ -39,7 +40,11 @@ public class Flink {
                             String[] columns = message.split(",");
                             if (columns.length >= 6) {
                                 String content = columns[5];
+                                String user = columns[4];
+                                String date = columns[2];
+                                boolean isUserBanned = banUserList.stream().anyMatch(user::equals);
                                 boolean isBanned = banList.stream().anyMatch(content::contains);
+                                writeMessage(user, content, date, isBanned, isUserBanned);
                                 out.collect(Tuple2.of(message, !isBanned)); // true = accepted, false = banned
                             }
                         } catch (Exception e) {
@@ -51,6 +56,22 @@ public class Flink {
                     public void processBroadcastElement(Set<String> value, Context ctx,
                             Collector<Tuple2<String, Boolean>> out) {
                         banList = value;
+                        banUserList = new HashSet<>();
+
+                    }
+                    public void writeMessage(String user, String message, String date, boolean isBanned,boolean isUserBanned){
+                        if (isUserBanned){
+                            System.out.println("\u001B[31m" +
+                                    date + " || " + user + ": User Banned"
+                                    + "\u001B[0m");
+                        } else if (isBanned) {
+                            System.out.println("\u001B[31m" +
+                                    date + " || " + user + ": Message contains banned word"
+                                    + "\u001B[0m");
+                            banUserList.add(user);
+                        }else{
+                            System.out.println(date + " || " + user + ": " + message);
+                        }
                     }
                 });
 
