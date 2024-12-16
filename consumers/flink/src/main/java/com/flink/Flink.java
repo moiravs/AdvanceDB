@@ -26,6 +26,7 @@ public class Flink {
                 (Class<Set<String>>) (Class<?>) Set.class);
 
         BroadcastStream<Set<String>> broadcastBanList = banListStream.broadcast(broadcastStateDescriptor);
+
         DataStream<String> messages = env.readTextFile("../../chat.csv");
         DataStream<Tuple2<String, Boolean>> processedMessages = messages
                 .connect(broadcastBanList)

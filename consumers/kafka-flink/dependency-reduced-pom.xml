@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.flink</groupId>
+  <groupId>com.kafka_flink</groupId>
   <artifactId>flink-java-project</artifactId>
   <version>1.0-SNAPSHOT</version>
   <build>
@@ -20,7 +20,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.0.0</version>
         <configuration>
-          <mainClass>com.flink.Flink</mainClass>
+          <mainClass>com.kafka_flink.Kafka_Flink</mainClass>
           <arguments>
             <argument>--add-opens=java.base/java.lang=ALL-UNNAMED</argument>
             <argument>--add-opens=java.base/java.util=ALL-UNNAMED</argument>
@@ -29,20 +29,13 @@
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
+        <version>3.6.0</version>
         <executions>
           <execution>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
-            <configuration>
-              <transformers>
-                <transformer>
-                  <mainClass>com.flink.Flink</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
           </execution>
         </executions>
       </plugin>

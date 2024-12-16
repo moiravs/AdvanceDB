@@ -16,3 +16,4 @@ consumers/kafka/target/*
 chat.csv
 cleaned_chat.csv
 *.csv
+typescript
