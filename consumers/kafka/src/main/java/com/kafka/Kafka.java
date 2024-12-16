@@ -16,7 +16,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class Kafka {
 
     public static void main(String[] args) throws JsonProcessingException, IOException {
-        // Parameters
         String banListFile = "../../banlist.txt";
         String[] bannedWords = Files.readAllLines(Paths.get(banListFile)).toArray(String[]::new);
         try (KafkaConsumer<String, String> consumer = connectToBroker()) {
@@ -29,12 +28,16 @@ public class Kafka {
         }
     }
 
+    /**
+     * Connect to the Kafka broker
+     * 
+     * @return a Kafka consumer
+     */
     public static KafkaConsumer<String, String> connectToBroker() {
         String kafkaServer = "localhost:9092";
         String topic = "chat";
         String groupId = "kafka";
 
-        // Setting proprety for kafka
         Properties props = new Properties();
         props.put("bootstrap.servers", kafkaServer);
         props.put("group.id", groupId);
