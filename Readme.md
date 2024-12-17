@@ -165,83 +165,71 @@ metrics.reporters.prometheus.class: org.apache.flink.metrics.prometheus.Promethe
 ```
 /opt/Flink/bin/start-cluster.sh
 ```
-
-## Create the database
-
-kafka and Flink are Stream DB doesn't have a database inside itself so we need to choose another program for storing data.
-Here we use postgres
-
-### Ubuntu
-
-#### Postgres installation
-
+## Application
+We have multiple Applications:\\
+ - 2 producers in the folder producers.
+ - 3 consumers in the folder consumers.
+### Preconfiguration
+#### Library and executable
+Producers are written in python so for library you just need to do:
 ```
-sudo apt install postgresql postgresql-contrib
+pip install -r requirements.txt
 ```
-
-#### creating a database
-
+Consumers are written in java and controlled with maven so for library:
 ```
-createdb streamdb
+mvn clean install
 ```
-
-#### creating a table
-
+Then we can compile the consumers with their pom file.
 ```
-createdb streamdb
-sudo -iu postgres psql -d streamdb -c
-"CREATE TABLE messages (
-    id SERIAL PRIMARY KEY,
-    value TEXT,
-    timestamp TIMESTAMP
-);"
+mvn clean package
 ```
-
-## DataSet to benchmark
-
-<!--
-### Ubuntu
-#### Preconfiguration
-
-To use the benchmarks yahoo, you will need to install leiningen and leiningen also need java
+#### kafka and flink
+If the application use flink, you just need to launch the Flink cluster.
+if the application use kafka, you need to start kafka and create a kafka topic with the name "chat".
+### Launching app
+for a producer, we launch with:
 ```
-sudo apt update
-sudo apt install openjdk-11-jdk
-java -version
+python3 *.py
 ```
-Then you can install and use leiningen. Install curl with apt install if you don't have curl.
+for a consumer, we can launch the application using their pom file.
 ```
-curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o lein
-chmod +x lein
-sudo mv lein /usr/local/bin/
+mvn exec:java
 ```
-Run leiningen to complete the installation and you can use --version to check if the installation is done.
+## Benchmark
+### Kafka
+Before benchmark, you need to start kafka and create a kafka topic.
+#### Kafka topic ingestion rate
+To get the kafka topic ingestion rate, we use a tool given by kafka
 ```
-lein
-lein --version
+kafka-producer-perf-test.sh --topic chat --num-records 1000000 --record-size 100 --throughput -1 --producer-props bootstrap.servers=localhost:9092
 ```
-#### Benchmarks Installation
-Download the benchmarks
+Parameters:\\
+   --topic chat : the Kafka topic where the messages will be sent.\\
+   --num-records 1000000 : the number of messages to be sent.\\
+   --record-size 100 : the size of each message in bytes.\\
+   --throughput -1: sends messages as quickly as possible.\\
+   --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.\\
+From this command we get data about records/secm, avg latency, max latency and quantiles.
+#### Kafka topic sending rate
+To get the kafka topic sending rate, we use a tool given by kafka
 ```
-git clone https://github.com/yahoo/streaming-benchmarks.git
+kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic chat --messages 1000000 --threads 1 --timeout 10000
 ```
-To install all dependencies. Attention it will install each streaming database for which it have a benchmark. Take a very long time.
-```
-./stream-bench.sh SETUP
-```
-#### Configuring
-In the file located at conf/benchmarkConf.yaml
-You have to configure the kafka topic and create the topic if not exists or you can just put a viable topic here.
-then you also have to launch kafka server and flink server.
-#### running benchmarks
--->
+Parameters:\\
+   --bootstrap-server localhost:9092 : the address of the Kafka server.\\
+   --topic chat : the Kafka topic from which messages will be consumed.\\
+   --messages 1000000 : the number of messages to be consumed.\\
+   --threads 1 : the number of consuming threads.\\
+   --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.\\
+### Flink
+Before benchmark, you need to launch the Flink cluster and go to the website http://localhost:8081/#/overview to view the metrics of the flink
 
 ```
 cd consumers/flink
 /opt/Flink/bin/flink run -c com.flink.Main target/flink-java-project-1.0-SNAPSHOT.jar
 ```
 
-now you can monitor on http://localhost:8081/#/overview
+now you can monitor on 
 We can also check on virtualVM
 
 ```
@@ -261,24 +249,6 @@ Use kafka-producer-perf-test.sh & kafka-consumer-perf-test.sh
 
 1. Create topic:
    kafka-topics.sh --create --topic chat --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-
-2. Porducer benchmark:
-   kafka-producer-perf-test.sh --topic chat --num-records 1000000 --record-size 100 --throughput -1 --producer-props bootstrap.servers=localhost:9092
-   Parameters:
-   --topic test-topic : the Kafka topic where the messages will be sent.
-   --num-records 1000000 : the number of messages to be sent.
-   --record-size 100 : the size of each message in bytes.
-   --throughput -1: sends messages as quickly as possible.
-   --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.
-
-3. Consumer benchmark:
-   kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic chat --messages 1000000 --threads 1 --timeout 10000
-   Parameters:
-   --bootstrap-server localhost:9092 : the address of the Kafka server.
-   --topic test-topic : the Kafka topic from which messages will be consumed.
-   --messages 1000000 : the number of messages to be consumed.
-   --threads 1 : the number of consuming threads.
-   --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.
 
 4. Clean
    kafka-topics.sh --delete --topic test-topic --bootstrap-server localhost:9092
