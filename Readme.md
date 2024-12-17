@@ -166,8 +166,8 @@ metrics.reporters.prometheus.class: org.apache.flink.metrics.prometheus.Promethe
 /opt/Flink/bin/start-cluster.sh
 ```
 ## Application
-We have multiple Applications:\\
- - 2 producers in the folder producers.
+We have multiple Applications:
+ - 1 producers in the folder producers.
  - 3 consumers in the folder consumers.
 ### Preconfiguration
 #### Library and executable
@@ -186,7 +186,7 @@ mvn clean package
 #### kafka and flink
 If the application use flink, you just need to launch the Flink cluster.
 if the application use kafka, you need to start kafka and create a kafka topic with the name "chat".
-### Launching app
+#### Launching app
 for a producer, we launch with:
 ```
 python3 *.py
@@ -195,9 +195,15 @@ for a consumer, we can launch the application using their pom file.
 ```
 mvn exec:java
 ```
+we also need a chat.csv which is the dataset used, you can get this dataset on http://vps-efc5205a.vps.ovh.net/content/sentiment140.zip
+#### Combinaison
+You can launch the producer kafka with the consumer Kafka or the consumer Kafka-Flink.
+You can launch the consumer kafka-flink alone.
+#### Error
+If the producer kafka have a probleme with the dataset, you can use csv_repaired.py in producers folder to repair the csv and will output cleaned_chat.csv. Replace chat.csv by this file.
 ## Benchmark
 ### Kafka
-Before benchmark, you need to start kafka and create a kafka topic.
+Before benchmark, you need to start kafka and create a kafka topic empty.
 #### Kafka topic ingestion rate
 To get the kafka topic ingestion rate, we use a tool given by kafka
 ```
@@ -221,39 +227,25 @@ Parameters:\\
    --messages 1000000 : the number of messages to be consumed.\\
    --threads 1 : the number of consuming threads.\\
    --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.\\
+From this command we get multiple data about the test but we will only use nbr of MSG/second .
 ### Flink
-Before benchmark, you need to launch the Flink cluster and go to the website http://localhost:8081/#/overview to view the metrics of the flink
-
+Before benchmark, you need to launch the Flink cluster and go to the web monitor http://localhost:8081/#/overview to view the metrics of the flink
+#### Flink processing time
+Send the job to the web monitor
 ```
 cd consumers/flink
-/opt/Flink/bin/flink run -c com.flink.Main target/flink-java-project-1.0-SNAPSHOT.jar
+/opt/Flink/bin/flink run -c com.flink.Flink target/flink-java-project-1.0-SNAPSHOT.jar
 ```
-
-now you can monitor on 
-We can also check on virtualVM
-
+you can use the time used by the job as time it take to process all messages.
+#### Kafka-Flink processing time
+you also need to launch kafka and the topic "chat" empty.
+Send the job to the web monitor
 ```
-sudo apt install visualvm
-visualVM
+cd consumers/kafka-flink
+/opt/Flink/bin/flink run -c com.kafka_flink.Kafka_Flink target/flink-java-project-1.0-SNAPSHOT.jar
 ```
-
-Testing Flink on single node
-
-```
-./stream-bench.sh FLINT_TEST
-```
-
-## Kafka benchmark
-
-Use kafka-producer-perf-test.sh & kafka-consumer-perf-test.sh
-
-1. Create topic:
-   kafka-topics.sh --create --topic chat --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
-
-4. Clean
-   kafka-topics.sh --delete --topic test-topic --bootstrap-server localhost:9092
-
-Notes: - use a Python script with the confluent-kafka library to send the data. - Run the benchmarks several times (min 6 times, ignore the first result).
+then you just need to go inside the job you want to check and click on the job again.
+Select the tab metrics and choose the metrics for number of messages processed.
 
 https://github.com/yahoo/streaming-benchmarks
 
