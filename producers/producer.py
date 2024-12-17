@@ -12,7 +12,7 @@ try:
 except:
     print(f"can't join kafka server")
     exit(1)
-data = pd.read_csv('../cleaned_chat.csv', encoding='utf-8')
+data = pd.read_csv('../chat.csv', encoding='utf-8')
 
 for index, row in data.iterrows():
     message = {
