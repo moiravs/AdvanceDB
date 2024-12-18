@@ -18,7 +18,7 @@ read -p "Enter your choice: " os
 if [ "$os" != "1" ] && [ "$os" != "2" ]; then
 	echo "You chose manual."
 	echo "Please install the following packages :"
-	echo "openjdk-11-jdk kafka"
+	echo "openjdk-11-jdk kafka flink zookeeper python3-venv"
 fi
 
 separator
@@ -35,10 +35,10 @@ separator
 echo "Installing packages..."
 separator
 if [ "$os" == "1" ]; then
-	sudo apt install openjdk-11-jdk
+	sudo apt install openjdk-11-jdk python3-venv
 elif [ "$os" == "2" ]; then
 	sudo pacman -S yay
-	yay openjdk11
+	yay openjdk11 python3-venv
 fi
 
 separator
