@@ -16,7 +16,7 @@ sudo apt update
 separator
 echo "Installing packages..."
 separator
-sudo apt install openjdk-11-jdk python3-venv
+sudo apt install openjdk-11-jdk python3-venv libpq-dev
 
 separator
 echo "Installing Kafka..."
