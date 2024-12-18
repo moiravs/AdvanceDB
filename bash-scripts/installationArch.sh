@@ -17,7 +17,7 @@ separator
 echo "Installing packages..."
 separator
 sudo pacman -S yay
-yay openjdk11 python3-venv
+yay openjdk11 python3-venv libpq-dev gcc g++
 
 separator
 echo "Installing Kafka..."
