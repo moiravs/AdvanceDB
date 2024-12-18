@@ -23,7 +23,7 @@ echo "Installing Kafka..."
 separator
 wget https://downloads.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz
 tar -xzf kafka_2.12-3.9.0.tgz
-sudo mv kafka_2.12-3.9.0.tgz /opt/kafka/
+sudo mv kafka_2.12-3.9.0 /opt/kafka/
 rm kafka_2.12-3.9.0.tgz
 sudo mkdir -p /tmp/zookeeper/version-2
 sudo chown -R $USER:$USER /tmp/zookeeper
@@ -35,7 +35,7 @@ echo "Installing Flink..."
 separator
 wget https://archive.apache.org/dist/flink/flink-1.14.4/flink-1.14.4-bin-scala_2.12.tgz
 tar -xzf flink-1.14.4-bin-scala_2.12.tgz
-sudo mv flink-1.14.4-bin-scala_2.12.tgz /opt/flink/
+sudo mv flink-1.14.4 /opt/flink/
 rm flink-1.14.4-bin-scala_2.12.tgz
 
 separator
