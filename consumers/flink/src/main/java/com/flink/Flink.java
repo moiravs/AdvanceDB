@@ -20,14 +20,14 @@ public class Flink {
 
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        Set<String> banList = loadBanList("../../banlist.txt");
+        Set<String> banList = loadBanList("data/banlist.txt");
         DataStream<Set<String>> banListStream = env.fromElements(banList);
         MapStateDescriptor<Void, Set<String>> broadcastStateDescriptor = new MapStateDescriptor<>("banList", Void.class,
                 (Class<Set<String>>) (Class<?>) Set.class);
 
         BroadcastStream<Set<String>> broadcastBanList = banListStream.broadcast(broadcastStateDescriptor);
 
-        DataStream<String> messages = env.readTextFile("../../chat.csv");
+        DataStream<String> messages = env.readTextFile("data/chat.csv");
         DataStream<Tuple2<String, Boolean>> processedMessages = messages
                 .connect(broadcastBanList)
                 .process(new BroadcastProcessFunction<String, Set<String>, Tuple2<String, Boolean>>() {
@@ -60,8 +60,10 @@ public class Flink {
                         banUserList = new HashSet<>();
 
                     }
-                    public void writeMessage(String user, String message, String date, boolean isBanned,boolean isUserBanned){
-                        if (isUserBanned){
+
+                    public void writeMessage(String user, String message, String date, boolean isBanned,
+                            boolean isUserBanned) {
+                        if (isUserBanned) {
                             System.out.println("\u001B[31m" +
                                     date + " || " + user + ": User Banned"
                                     + "\u001B[0m");
@@ -70,7 +72,7 @@ public class Flink {
                                     date + " || " + user + ": Message contains banned word"
                                     + "\u001B[0m");
                             banUserList.add(user);
-                        }else{
+                        } else {
                             System.out.println(date + " || " + user + ": " + message);
                         }
                     }

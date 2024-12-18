@@ -26,7 +26,7 @@ public class Kafka_Flink {
         KafkaSource<String> kafkaSource = createStringConsumerForTopic(topic, kafkaServer, groupId);
         DataStream<String> stringInputStream = environment.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(),
                 "Kafka Source");
-        String banListFile = "../../banlist.txt";
+        String banListFile = "data/banlist.txt";
         String[] banWords = Files.readAllLines(Paths.get(banListFile)).toArray(String[]::new);
         SinkFunction<String> sink = new SinkFunction<String>() {
 

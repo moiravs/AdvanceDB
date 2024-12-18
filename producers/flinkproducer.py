@@ -6,7 +6,7 @@ import time
 app = Flask(__name__)
 
 # Load the CSV file
-data = pd.read_csv('../chat.csv')
+data = pd.read_csv('chat.csv')
 
 @app.route('/', methods=['GET'])
 def stream_data():

@@ -11,12 +11,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 public class Kafka {
 
-    public static void main(String[] args) throws JsonProcessingException, IOException {
-        String banListFile = "../../banlist.txt";
+    public static void main(String[] args) throws IOException {
+        String banListFile = "data/banlist.txt";
         String[] bannedWords = Files.readAllLines(Paths.get(banListFile)).toArray(String[]::new);
         try (KafkaConsumer<String, String> consumer = connectToBroker()) {
             while (true) {

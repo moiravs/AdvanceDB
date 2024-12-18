@@ -1,5 +1,5 @@
 lines = []
-with open('../chat.csv', 'r', encoding='utf-8', errors='replace') as f:
+with open('chat.csv', 'r', encoding='utf-8', errors='replace') as f:
     lines = f.readlines()
 
 # Write the cleaned lines to a new file
