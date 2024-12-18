@@ -41,7 +41,7 @@ echo "Initalizing python venv..."
 separator
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r ../requirements.txt
 
 separator
 echo "Done !"
