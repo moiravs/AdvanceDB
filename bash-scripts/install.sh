@@ -13,3 +13,5 @@ else
 	echo "Invalid input. Aborting..."
 fi
 
+mv .venv ..
+
