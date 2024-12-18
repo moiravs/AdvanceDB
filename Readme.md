@@ -171,6 +171,13 @@ We have multiple Applications:
  - 3 consumers in the folder consumers.
 ### Preconfiguration
 #### Library and executable
+You first need java.
+
+```
+sudo apt update
+sudo apt install openjdk-11-jdk
+java -version
+```
 Producers are written in python so for library you just need to do:
 ```
 pip install -r requirements.txt
@@ -189,7 +196,7 @@ if the application use kafka, you need to start kafka and create a kafka topic w
 #### Launching app
 for a producer, we launch with:
 ```
-python3 *.py
+python3 producer.py
 ```
 for a consumer, we can launch the application using their pom file.
 ```
