@@ -229,11 +229,11 @@ To get the kafka topic sending rate, we use a tool given by kafka
 kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic chat --messages 1000000 --threads 1 --timeout 10000
 ```
 Parameters:\\
-   --bootstrap-server localhost:9092 : the address of the Kafka server.\\
-   --topic chat : the Kafka topic from which messages will be consumed.\\
-   --messages 1000000 : the number of messages to be consumed.\\
-   --threads 1 : the number of consuming threads.\\
-   --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.\\
+ - --bootstrap-server localhost:9092 : the address of the Kafka server.\\
+ - --topic chat : the Kafka topic from which messages will be consumed.\\
+ - --messages 1000000 : the number of messages to be consumed.\\
+ - --threads 1 : the number of consuming threads.\\
+ - --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.\\
 From this command we get multiple data about the test but we will only use nbr of MSG/second .
 ### Flink
 Before benchmark, you need to launch the Flink cluster and go to the web monitor http://localhost:8081/#/overview to view the metrics of the flink
