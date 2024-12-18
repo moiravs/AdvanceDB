@@ -216,24 +216,24 @@ To get the kafka topic ingestion rate, we use a tool given by kafka
 ```
 kafka-producer-perf-test.sh --topic chat --num-records 1000000 --record-size 100 --throughput -1 --producer-props bootstrap.servers=localhost:9092
 ```
-Parameters:\\
-   --topic chat : the Kafka topic where the messages will be sent.\\
-   --num-records 1000000 : the number of messages to be sent.\\
-   --record-size 100 : the size of each message in bytes.\\
-   --throughput -1: sends messages as quickly as possible.\\
-   --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.\\
+Parameters:
+  - --topic chat : the Kafka topic where the messages will be sent.
+  - --num-records 1000000 : the number of messages to be sent.
+  - --record-size 100 : the size of each message in bytes.
+  - --throughput -1: sends messages as quickly as possible.
+  - --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.
 From this command we get data about records/secm, avg latency, max latency and quantiles.
 #### Kafka topic sending rate
 To get the kafka topic sending rate, we use a tool given by kafka
 ```
 kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic chat --messages 1000000 --threads 1 --timeout 10000
 ```
-Parameters:\\
- - --bootstrap-server localhost:9092 : the address of the Kafka server.\\
- - --topic chat : the Kafka topic from which messages will be consumed.\\
- - --messages 1000000 : the number of messages to be consumed.\\
- - --threads 1 : the number of consuming threads.\\
- - --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.\\
+Parameters:
+ - --bootstrap-server localhost:9092 : the address of the Kafka server.
+ - --topic chat : the Kafka topic from which messages will be consumed.
+ - --messages 1000000 : the number of messages to be consumed.
+ - --threads 1 : the number of consuming threads.
+ - --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.
 From this command we get multiple data about the test but we will only use nbr of MSG/second .
 ### Flink
 Before benchmark, you need to launch the Flink cluster and go to the web monitor http://localhost:8081/#/overview to view the metrics of the flink
