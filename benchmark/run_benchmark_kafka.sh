@@ -5,8 +5,8 @@
 BROKER="localhost:9092"
 TOPIC="benchmark-topic"
 NUM_RECORDS=(1000 10000 100000 1000000 1600000)
-OUTPUT_FILE_PROD="kafka_prod_benchmark_results.txt"
-OUTPUT_FILE_CONS="kafka_cons_benchmark_results.txt"
+OUTPUT_FILE_PROD="benchmark/kafka_prod_benchmark_results.txt"
+OUTPUT_FILE_CONS="benchmark/kafka_cons_benchmark_results.txt"
 
 run_benchmark() {
     local num_records=$1

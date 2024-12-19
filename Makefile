@@ -21,4 +21,7 @@ flink:
 kafka-flink:
 	python3 $(PRODUCER_DIR)/producer.py &
 	java -jar consumers/kafka-flink/target/flink-java-project-1.0-SNAPSHOT.jar
+	
+benchmark-kafka:
+	sh benchmark/run_benchmark_kafka.sh
 
