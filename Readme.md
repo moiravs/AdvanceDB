@@ -1,19 +1,24 @@
 # Stream DB with: Apache kafka and Apache Flink
 
-Kafka and Flink are a distributed event-streaming platform, it doesn't contains a database inside itself because they are
-optimized for real-time data streaming and event processing.
-it is used to quickly transfer data from producers to consumers.
-If we want to store the data, we will need to implement a database at the consumer end.
+This is our project for the course INFO-F415. The link of the course can be found here: https://cs.ulb.ac.be/public/teaching/infoh415.
+
+The technology we chose are Stream Databases with Apache Kafka & Apache Flink.
+We decided to implement a chat that ban users when they write an "illegal" word.
+We implemented three differents chats: one with Apache Kafka, one with Apache Flink and one with Apache Kafka & Apache Flink.
+
+Our powerpoint and our report can be found in the `doc` directory.
 
 ## Dataset
 
 we also need a chat.csv which is the dataset used, you can get this dataset on http://vps-efc5205a.vps.ovh.net/content/sentiment140.zip
 
-#### Error
+If the producer kafka has a problem with the dataset, you can use csv_repaired.py in producers folder which will modify the dataset chat.csv to be readable.
 
-If the producer kafka have a probleme with the dataset, you can use csv_repaired.py in producers folder to repair the csv and will output cleaned_chat.csv. Replace chat.csv by this file.
+# Running the code
 
-#### Library installation for coding
+The installation script is for Ubuntu-based systems. Other systems will need to adapt the installation script.
+
+## Library installation for coding
 
 Installing library for compatibity with python
 
@@ -32,11 +37,6 @@ sudo apt install openjdk-11-jdk
 
 ### Installation of kafka:
 
-On Arch-based systems:
-`yay kafka`
-
-On Ubuntu-based systems:
-
 ```
 wget https://downloads.apache.org/kafka/3.9.0/kafka_2.12-3.9.0.tgz
 tar -xvzf kafka_2.12-3.9.0.tgz
@@ -50,13 +50,9 @@ sudo chown -R $USER:$USER /tmp/kafka-logs
 
 ### Launching Kafka servers
 
-We launch zookeeper then kafka, maybe you will need to launch them in background for being able to launch them at the same time.
-
 ```
-sudo systemctl start zookeeper
-sudo systemctl enable zookeeper
-sudo systemctl start kafka
-sudo systemctl enable kafka
+/opt/kafka/bin/zookeeper-server-start.sh /opt/kafka/config/zookeeper.properties
+/opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/server.properties
 ```
 
 ### Topic creation
@@ -87,13 +83,7 @@ delete.topic.enable=true
 
 ### Installation
 
-Arch Linux:
-
-```
-yay apache-flink
-```
-
-Ubuntu:
+Ubuntu-based systems:
 
 ```
 wget https://archive.apache.org/dist/flink/flink-1.14.4/flink-1.14.4-bin-scala_2.12.tgz
@@ -122,51 +112,25 @@ metrics.reporters.prometheus.class: org.apache.flink.metrics.prometheus.Promethe
 
 # Benchmark
 
-### Kafka
+## Kafka
 
-Before benchmark, you need to start kafka and create a kafka topic empty.
-
-#### Kafka topic ingestion rate
-
-To get the kafka topic ingestion rate, we use a tool given by kafka
+- Kafka topic ingestion rate
 
 ```
 kafka-producer-perf-test.sh --topic chat --num-records 1000000 --record-size 100 --throughput -1 --producer-props bootstrap.servers=localhost:9092
 ```
 
-Parameters:
-
-- --topic chat : the Kafka topic where the messages will be sent.
-- --num-records 1000000 : the number of messages to be sent.
-- --record-size 100 : the size of each message in bytes.
-- --throughput -1: sends messages as quickly as possible.
-- --producer-props bootstrap.servers=localhost:9092 : the properties of the producer, including the address of the Kafka server.
-
-From this command we get data about records/secm, avg latency, max latency and quantiles.
-
-#### Kafka topic sending rate
-
-To get the kafka topic sending rate, we use a tool given by kafka
+- Kafka topic sending rate
 
 ```
 kafka-consumer-perf-test.sh --bootstrap-server localhost:9092 --topic chat --messages 1000000 --threads 1 --timeout 10000
 ```
 
-Parameters:
-
-- --bootstrap-server localhost:9092 : the address of the Kafka server.
-- --topic chat : the Kafka topic from which messages will be consumed.
-- --messages 1000000 : the number of messages to be consumed.
-- --threads 1 : the number of consuming threads.
-- --timeout 10000 : the timeout in milliseconds before stopping the test if no messages are received.
-
-From this command we get multiple data about the test but we will only use nbr of MSG/second .
-
-### Flink
+## Flink
 
 Before benchmark, you need to launch the Flink cluster and go to the web monitor http://localhost:8081/#/overview to view the metrics of the flink
 
-#### Flink processing time
+### Flink processing time
 
 Send the job to the web monitor
 
@@ -177,9 +141,9 @@ cd consumers/flink
 
 you can use the time used by the job as time it take to process all messages.
 
-#### Kafka-Flink processing time
+## Kafka-Flink
 
-you also need to launch kafka and the topic "chat" empty.
+Before benchmark, you need to launch the Flink cluster and go to the web monitor http://localhost:8081/#/overview to view the metrics of the flink
 Send the job to the web monitor
 
 ```
